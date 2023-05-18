@@ -1,0 +1,76 @@
+plugins {
+    id 'java-gradle-plugin'
+    id 'com.github.hierynomus.license' version '0.15.0'
+    id 'com.gradle.plugin-publish' version '1.0.0-rc-2'
+    id 'com.github.ben-manes.versions' version '0.27.0'
+    id 'maven-publish'
+}
+
+group 'com.gluonhq'
+version '1.0.19-SNAPSHOT'
+
+sourceCompatibility = 11
+targetCompatibility = 11
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://plugins.gradle.org/m2/"
+    }
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots"
+    }
+}
+
+dependencies {
+    implementation gradleApi()
+
+    testImplementation gradleTestKit()
+    implementation 'com.gluonhq:substrate:0.0.59-SNAPSHOT'
+    implementation 'org.openjfx:javafx-plugin:0.0.10'
+}
+
+gradlePlugin {
+    plugins {
+        gluonFXPlugin {
+            id = 'com.gluonhq.gluonfx-gradle-plugin'
+            displayName = 'GluonFX Plugin'
+            description = 'GluonFX plugin allows to run JavaFX application on the JVM or to create their native images.'
+            implementationClass = 'com.gluonhq.gradle.GluonFXPlugin'
+        }
+    }
+}
+
+pluginBundle {
+    website = 'https://github.com/gluonhq/gluonfx-gradle-plugin'
+    vcsUrl = 'https://github.com/gluonhq/gluonfx-gradle-plugin'
+    tags = [ 'java', 'javafx', 'gluon', 'client', 'substrate', 'graalvm', 'aot' ]
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = project.group
+            artifactId = 'gluonfx-gradle-plugin'
+            version = project.version
+        }
+    }
+    repositories {
+        maven {
+            if (project.hasProperty('sonatypeUsername') && project.hasProperty('sonatypePassword')) {
+                credentials {
+                    username project.property('sonatypeUsername')
+                    password project.property('sonatypePassword')
+                }
+                url = 'https://oss.sonatype.org/content/repositories/snapshots/'
+            }
+        }
+    }
+}
+
+license {
+    skipExistingHeaders = true
+    mapping {
+        java = 'SLASHSTAR_STYLE'
+    }
+}
